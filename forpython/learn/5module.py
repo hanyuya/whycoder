@@ -79,7 +79,7 @@
 # 2、如果当前目录下没有找到模块，Python解释器还会到环境变量PYTHONPATH指定的目录搜索。
 # >>> import sys
 # >>> sys.path
-# ['', '/usr/lib64/python38.zip', '/usr/lib64/python3.8', '/usr/lib64/python3.8/lib-dynload', '/home/10344234@zte.intra/.local/lib/python3.8/site-packages', '/usr/lib64/python3.8/site-packages', '/usr/lib/python3.8/site-packages']
+# ['', '/usr/lib64/python38.zip', '/usr/lib64/python3.8', '/usr/lib64/python3.8/lib-dynload', '/home/.local/lib/python3.8/site-packages', '/usr/lib64/python3.8/site-packages', '/usr/lib/python3.8/site-packages']
 
 
 
