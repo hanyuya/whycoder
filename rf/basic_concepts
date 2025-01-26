@@ -1,0 +1,1118 @@
+; RF 的介绍
+;     Robot Framework是基于 Python 的可扩展关键字驱动的自动化框架，用于验收测试
+;     验收测试驱动开发（ATDD），行为驱动开发（BDD）和机器人流程自动化（RPA）
+;     它可用于分布式，异构环境；在这些环境中，自动化需要使用不同的技术和接口。
+;     该框架周围有一个丰富的生态系统，由作为单独项目开发的各种通用库和工具组成
+
+; 可扩展关键字驱动
+; 分两part看，可扩展，关键字驱动
+; 可扩展
+; 代表你可以自己开发关键字，或者引用第三方的关键字库【如Selenium、Appium的关键字库】
+; 关键字驱动
+; 由关键字驱动着自动化测试的执行，所有测试用例都离不开关键字【RF的关键，也是学习的关键】
+
+; 测试套件
+    ; 它可以是文件夹，也可以是文件
+    ; 测试用例存在于测试套件文件（不是测试套件目录哦！）中，一个测试套件可以有多个测试用例
+    ; 测试套件文件夹可以包含 子套件文件夹 和 子套件文件
+    ; 测试套件文件夹也可以包含一个特殊的初始化文件
+
+; 测试库
+    ; 包含最底层的关键字，第三方关键字库
+
+; 资源文件
+    ; 包含用户关键字和变量
+
+; 变量文件
+    ; 提供更灵活的方式来创建变量
+
+; 测试套件文件的表
+    ; RF 支持四种表
+        ; Settings
+        ; Variables
+        ; Test Cases
+        ; Keywords
+
+; 测试套件文件的大概结构
+    ; *** Settings ***
+    ; Library       OperatingSystem
+
+    ; *** Variables ***
+    ; ${MESSAGE}    Hello, world!
+
+    ; *** Test Cases ***
+    ; My Test
+    ;     [Documentation]    Example test
+    ;     Log    ${MESSAGE}
+    ;     My Keyword    /tmp
+
+    ; Another Test
+    ;     Should Be Equal    ${MESSAGE}    Hello, world!
+
+    ; *** Keywords ***
+    ; My Keyword
+    ;     [Arguments]    ${path}
+    ;     Directory Should Exist    ${path}
+
+    ; Settings
+        ; 是当前测试套件的全局配置表，比如常用的
+            ; 声明需要用到的测试库
+            ; 声明自己写的模块
+            ; 声明资源文件
+            ; 测试套件的环境初始化（setup）
+            ; 套件内的标签
+    ; Test Cases
+        ; 定义这个测试套件的测试用例集
+    ; Variables
+        ; 定义这个测试套件的全局变量集
+    ; Keywords
+        ; 定义这个测试套件的用户关键字
+
+; RF 测试用例的格式
+    ; 每配置部分个测试用例可以分成两个部分
+        ; 主体部分
+        ; 配置部分
+
+; 测试用例的配置部分
+    ; 配置项	作用
+    ; [Documentation]	该用例的文字说明,类似 Py 的注释
+    ; [Tags]	该用例的标签，可以有多个，记得标签间两个空格哦
+    ; [Setup]	该用例的前置操作
+    ; [Teardown]	该用例的后置操作
+    ; [Template]	声明该用例是模板关键字驱动,本用例只包含测试数据
+    ; [Timeout]	设置用例执行的超时时间
+; 代码例子：
+    ; *** Test Cases ***
+    ; 简单用例
+    ;     [Documentation]    该用例的文字说明，类似注释
+    ;     [Tags]    该用例的标签，标签A  标签B  回归测试
+    ;     [Setup]    log    该用例的前置操作
+    ;     [Teardown]    log    该用例的后置操作
+    ;     [Template]    # 该用例使用的是关键字模板，本用例只包含测试数据
+    ;     [Timeout]    60    设定用例的时间限制
+
+    ;     测试用例主体
+    ;     log    打印日志
+    ;     log to console    打印日志到控制台
+
+; 测试用例的主体部分
+    ; *** Test Cases ***
+    ; Valid Login    # 测试用例名称
+    ;     # 测试用例主体
+    ;     Open Login Page
+    ;     Input Username    demo
+    ;     Input Password    mode
+    ;     Submit Credentials
+    ;     Welcome Page Should Be Open
+    ;     # 一条测试用例结果
+    ; 
+    ; 设置变量
+    ;     Do Something    first argument    second argument
+    ;     ${value} =    Get Some Value
+    ;     Should Be Equal    ${value}    Expected value
+
+; *** Test Cases *** 
+    ; 注意首字母要大写以便插件可以识别，单词空一个空格，建议用自动提示，即敲一个T
+
+; 用例名称
+    ; 需要顶格写，如果是中文也不需要加引号
+
+; 用例主体
+    ; 注意相对于测试用例名字的缩进，至少缩进两个空格，建议直接 tab 键按下去（前提是设置了 tab 键等于四个空格）
+    ; 用例主体由关键字、变量组成，如果关键字需要用到参数，关键字和参数之间至少空两个空格；
+    ;   若有多个参数，参数间也是至少两个空格【因为两个空格是 RF 的分隔符】
+    ; 注释跟在 Python 里面一样哦
+
+; 关键字
+    ; log 、 log to console 是关键字
+    ; 打印日志、打印日志到控制台是参数，传给关键字
+    ; 等价于Python里面： log 、 log to console 是调用该方法，后面就是传给函数的参数【 log("打印日志") 】
+    ; 注意：关键字大小写不敏感， log 、 LOG 效果一样
+    ; 对于关键字：是调用的作用
+    ; 对于变量：是赋值 或 调用的作用
+    ; 关键字的来源
+        ; 测试库
+        ; 资源文件
+        ; 用例所在文件的用户关键字表
+
+; RF 执行命令
+    ; robot --options  datasource
+        ; datasource：可以是文件也可以是文件夹，都代表用例集所在的数据源
+        ; 文件：rf 用例所在的测试套件文件
+        ; 文件夹：文件夹里面所有包含 rf 用例的文件【包含所有子目录】
+        ; robot test.robot
+        ; robot testcase
+        ; 运行结果
+            ; 会在执行命令的当前目录下生成三个文件，主要是查看日志和结果
+            ; 日志文件：log.html 和 report.html 是日志文件，output.xml 是测试结果
+
+; RF 执行用例的内部流程
+    ; RF 读取测试套件文件（ .robot 文件），检查格式
+    ; RF 先解析测试用例中的关键字
+    ; RF 然后调用测试库对应的关键字
+    ; 关键字（即代码）完成具体工作
+    ; 真正和被测系统交互的就是测试库中的关键字集
+
+; 在RF 测试库里面，分为三种测试库
+    ; 标准测试库
+    ; 扩展测试库
+    ; 远程测试库
+
+; 标准测试库
+    ; 它们随 Robot Framework 版本一同发布的测试库， 不需要单独安装，但部分标准库仍然需要手动导入
+    ; 只有 BuiltIn 库是自动导入，不需要手动导入
+    ; 标准库类别
+        ; 库	介绍
+        ; BuiltIn	常用 且 最基础 的关键字
+        ; Collections	用于处理 List 和 Dict 的关键字 
+        ; DateTime	支持创建和验证日期和时间值以及它们之间的计算
+        ; Dialogs	支持暂停测试执行并从用户那里获取输入数据
+        ; OperatingSystem	支持执行各种与操作系统有关的任务
+        ; Process	 支持执行系统进程相关
+        ; Screenshot	截图
+        ; String	处理字符串和验证字符串内容
+        ; Telnet	支持连接到Telnet 服务器，并执行命令
+        ; XML	用于验证和修改 XML 文档
+
+; 扩展测试库
+    ; 标准库以外的其他测试库都统称为扩展测试库，它们是在 RF 开源社区实现的各种库；当然包括了你自己开发的测试库
+    ; 常见的扩展测试库
+        ; 常见领域	扩展库
+        ; Web 自动化测试	SeleniumLibrary、Selenium2Library、Selenium2Library for Java、watir-robot
+        ; Window GUI 测试	AutoItLibrary
+        ; 移动端自动化测试	Android library、iOS library、AppiumLibrary
+        ; 数据库测试	Database Library (Java)、Database Library (Python) MongoDB library
+        ; HTTP测试	HTTP library (livetest)、HTTP library (Requests)
+        ; 文件对比测试	Diff Library
+
+; 远程测试库
+    ; 是一个特殊的标准库，没有关键字
+    ; 它作为一个代理存在于 Robot Framework 和 实际(远程的)测试库中间
+    ; 实际的测试库可以运行在其它机器上, 而且实现语言也不再限于Robot Framework原生支持的编程语言
+
+; Library 导入测试库
+; 例子：
+    ; *** Variables ***
+    ; ${LIBRARY}    DateTime
+
+    ; *** Settings ***
+    ; Library    Collections
+    ; Library    SeleniumLibrary
+    ; Library    MyLibrary.library2
+    ; Library    MyLibrary.library1    arg1    arg2
+    ; Library    ${LIBRARY}
+
+    ; *** Test Cases ***
+    ; case
+    ;     log    case
+; 例子目录结构：
+    ; MyLibrary/
+    ;     ├── __init__.py
+    ;     ├── library1.py
+    ;     └── library2.py
+    ; test_suite1/
+    ;     ├── 1_测试用例配置部分.robot
+    ;     ├── 2_测试用例主体.robot
+    ;     ├── 3_最简单的关键字栗子.robot
+    ;     └── 4_Settings表_导入库.robot
+    ; test_suite2/
+; MyLibrary 的 两个 library 文件是自己创建的 Python 文件【属于用户自定义的关键字文件】
+; 测试库通常在  Setting 表格中声明  Library 来导入，库名称跟在  Library 后面. 
+; 库名称既是大小写敏感的，也是空格敏感的
+; 如果一个测试库是在某个包里的，则必须指明完整的包名称路径【如： MyLibrary.library2 】
+; 测试库的参数也可以使用默认值，不定数量参数【如： MyLibrary.library1 arg1 agr2 】
+; 测试库名称和参数都可以使用变量【如： Library ${LIBRARY} ，其实导入的是 DateTime 库】
+
+; 可以导入测试库的文件包括 
+    ; 测试用例文件
+    ; 资源文件
+    ; test suite initialization files【测试条件初始化文件，后面讲】
+; 所有这些场景中，一旦在这些文件中导入了测试库，则测试库中所有关键字在当前文件内都是可见的
+; 对于资源文件，这些关键字在引用这些资源文件的地方也是可见的
+
+; Import Library 导入测试库
+    ; 导入测试库的另一种方式是使用  BuiltIn  库提供的关键字 Import Library 
+    ; 该关键字也可以传参数
+    ; 导入的关键字在当前的测试套件中可用
+    ; 当测试库在测试执行前不能导入（ Settings 中不能导入），只能在执行过程中通过某些关键字来启用时，
+    ;   就可以用 Import Library 来导入某些关键字
+    ; 例子：
+        ; *** Variables ***
+        ; ${LIBRARY}    DateTime
+
+        ; *** Settings ***
+        ; Library    Collections
+        ; Library    SeleniumLibrary
+        ; Library    MyLibrary.Library2
+        ; Library    ${LIBRARY}
+
+        ; *** Test Cases ***
+        ; case
+        ;     log    case
+        ;     import library    MyLibrary.Library1
+        ;     import library    MyLibrary.Library2    arg1    arg2
+
+; 测试库设置别名
+    ; 为了避免不同测试库但是关键字重名的情况
+    ; 指定别名是用 WITH NAME ，必须大写，小写会报错
+    ; 例子：
+        ; *** Variables ***
+        ; ${LIBRARY}    DateTime
+
+        ; *** Settings ***
+        ; Library    Collections
+        ; Library    SeleniumLibrary    WITH NAME    selenium
+        ; Library    MyLibrary.library2    WITH NAME    mylib1
+        ; Library    MyLibrary.library1    WITH NAME    mylib2
+        ; Library    ${LIBRARY}
+
+        ; *** Test Cases ***
+        ; case
+        ;     log    case
+    ; 传参数和别名指定关键字的例子：
+        ; *** Settings ***
+        ; Library    SomeLibrary    localhost    1234    WITH NAME    Locallib
+        ; Library    SomeLibrary    server.domain    8080    WITH NAME    Remotelib
+
+        ; *** Test Cases ***
+        ; My Test
+        ;     Locallib.Some Keyword    some arg    second arg
+        ;     Remotelib.Some Keyword    another arg    whatever
+        ;     Locallib.Another Keyword
+
+        ; 如果测试库要传参，则参数列表在WITH NAME 前面
+        ; 调用不同库但相同名字关键字的写法： 别名.关键字
+
+; 使用变量文件
+; 变量文件
+    ; 变量文件包含了测试数据所需的变量
+    ; 虽然变量可以通过变量表格 *** Variables *** 中创建，或者通过命令行设置，不过这些方法有所局限，
+    ;   而变量文件可以动态地创建任意类型的变量
+    ; 变量文件一般由 Python 模块实现，语法完全是Python
+; 在变量文件中，有两种方法来创建变量
+    ; 直接创建变量
+        ; var = “变量值” ，这样等同于创建了 ${var} 变量
+        ; 例子：
+        ; # var.py
+        ; MgrLoginUrl = 'http://localhost/mgr/login/login.html'
+        ; StudentLoginUrl= 'http://localhost/student/login/login.html'
+        ; database= ['127.0.0.1' , '3306']
+        ; adminuser= {'name':'auto' , 'pw':'sdfsdfsdf'}
+    ; 通过特殊函数获取变量
+        ; 变量文件中可以包含一个特殊的函数 get_variables  (或者  getVariables )
+        ; 该函数将变量按字典的形式返回，该函数还可以接受参数，所以比较灵活
+; 使用变量文件
+        ; 9_变量文件引入
+        ; │
+        ; ├── test
+        ; │   └── 9_使用变量文件.robot
+        ; │
+        ; └── var
+        ;     └── 9_var.py
+; 有两种方式
+    ; 通过 settings 表
+        ; 例子：
+            ; *** Settings ***
+            ; Variables    ../var/9_var.py
+            ; 变量文件中定义的所有变量在导入它的测试文件中都是可见的
+            ; 如果同时导入了多个变量文件并且存在名称冲突, 则最先导入的生效
+            ; 通过变量表格 *** Variables *** 和命令行方式设置的变量会覆盖变量文件中的同名变量【变量文件的变量优先级低】
+        ; 声明变量文件时，路径搜索规则如下：
+            ; 首先，变量文件声明的时候，可以使用绝对路径，也可以使用相对路径
+            ; 使用相对路径的时候，RF搜索变量文件规则和 搜索资源文件搜索规则一样
+                ; 在测试文件当前目录进行匹配搜索
+                ; 若没有，则在Python的模块搜索路径中搜索【robot -P 搜索路径 test.robot】
+            ; 注意：不同目录间的分割符是 / ，而不是 .
+            ; Python 模块默认的搜索路径:本机的Python安装路径
+        ; 进入 robot 文件所在目录，cmd：robot  9_使用变量文件.robot
+    ; 通过命令行
+        ; 例子：
+        ; robot --variablefile ../var/9_var.py 9_使用变量文件.robot
+
+; 使用资源文件
+; 资源文件
+    ; 资源文件其实就是 RF 层面的库文件
+    ; 里面可以包含：测试库、其他资源文件、变量文件
+    ; 重点：里面不可以包含测试用例 *** Test Cases *** ，否则会报错
+; 啥时候用资源文件
+    ; 变量建议还是通过变量文件来存储
+    ; 资源文件可以拿来导入一些常用的测试库
+    ; 然后，公共的用户关键字也可以在资源文件里面声明（用户关键字下一篇文章介绍）
+; 下述栗子的目录结构
+    ; 10_资源文件
+    ; │
+    ; └── resource
+    ;     ├── rc2.robot
+    ;     ├── rc.robot
+    ;     └── test.robot
+    ; rc.robot 、 rc2.robot 是资源文件
+    ; test.robot 是测试套件
+; 看看 rc.robot 文件的示例结构，可以看到唯独没有 *** Test Cases *** 表
+    ;*** Settings ***
+    ; Documentation    An example resource file
+    ; Library    Selenium2Library
+
+    ; *** Variables ***
+    ; ${HOST}    localhost:7272
+    ; ${LOGIN_URL}    http://${HOST}/
+    ; ${WELCOME_URL}    http://${HOST}/welcome.html
+    ; ${BROWSER}    Firefox
+
+    ; *** Keywords ***
+    ; Open Login Page
+    ;     [Documentation]    Opens browser to login page
+    ;     Open Browser    ${LOGIN_URL}    ${BROWSER}
+    ;     Title Should Be    Login Page
+
+    ; Input Name
+    ;     [Arguments]    ${name}
+    ;     Input Text    username_field    ${name}
+
+    ; Input Password
+    ;     [Arguments]    ${password}
+    ;     Input Text    password_field    ${password}
+; 看看 test.robot 如何导入两个资源文件
+    ; 导入资源文件一定要加文件扩展名 rc.robot
+    ; *** Settings ***
+    ; Resource    rc.robot
+    ; Resource    resource/rc2.robot
+
+    ; *** Test Cases ***
+    ; ResourceTest
+    ;     # rc.robot
+    ;     log to console    ${HOST}
+    ;     log to console    ${LOGIN_URL}
+    ;     log to console    ${WELCOME_URL}
+    ;     log to console    ${BROWSER}
+
+    ;     # rc2.robot
+    ;     log to console    ${URL1}
+    ;     log to console    ${URL2}
+
+; 用户关键字的详解
+; 用户关键字
+    ; 类似 Python 里面的函数，我们自定义函数，等于我们自定义关键字，也称为用户关键字
+    ;  *** Keywords *** 表放的就是用户关键字
+; 定义用户关键字的简单例子：等价于 Python 里面：定义函数，调用函数
+    ; *** Test Cases ***
+    ; ADDtest
+    ;     ${sum}    add    1    1
+    ;     log to console    ${sum}
+
+    ; *** Keywords ***
+    ; Open Login Page
+    ;     Open Browser    http://host/login.html
+    ;     Title Should Be    Login Page
+
+    ; add
+    ;     [Arguments]    ${a}    ${b}
+    ;     ${sum}    Evaluate    ${a}+${b}
+    ;     [Return]    ${sum}
+
+; *** Keywords *** 表中的设置项
+    ; [Documentation]    Used for setting a 用户关键字的名称和文档。
+    ; [Tags]    标签，多个标签，超级多个标签
+    ; [Arguments]    传入用户关键字的参数，类似 Python 函数的参数列表
+    ; [Return]    用户关键字的返回值
+    ; [TearDown]    log to console    用户关键字后置操作
+    ; [Timeout]    超时时间
+
+; 用户关键字的参数详解
+    ; 参数通过 [Arguments] 设置, 参数名称的语法格式和 变量 一样, 如  ${arg} 
+    ; 其实用户关键字的参数列表就等同于 Python 函数的参数列表，只是写法变了而已
+    ; 位置参数：
+        ; One Argument
+        ;     [Arguments]    ${arg_name}
+        ;     Log    Got argument ${arg_name}
+
+        ; Three Arguments
+        ;     [Arguments]    ${arg1}    ${arg2}    ${arg3}
+        ;     Log    1st argument: ${arg1}
+        ;     Log    2nd argument: ${arg2}
+        ;     Log    3rd argument: ${arg3}
+    ; 默认值参数
+        ; 默认值的语法是对空格敏感的，等号 = 前面不允许有空格，而=后面的空格则被视作默认值的一部分
+        ; *** Test Cases ***
+        ; testDefault
+        ;     One Argument With Default Value
+        ;     Default Based On Earlier Argument    第一个参数
+
+        ; *** Variables ***
+        ; ${default}    默认值
+
+        ; *** Keywords ***
+        ; One Argument With Default Value
+        ;     [Arguments]    ${arg}=${default}
+        ;     log to console    ${arg}
+
+        ; Default Based On Earlier Argument
+        ;     [Arguments]    ${a}    ${b}=${a}    ${c}=${default}
+        ;     log to console    ${a}
+        ;     log to console    ${b}
+        ;     log to console    ${c}
+    ; 可变参数
+        ; 用 @{args} 声明参数时，就是代表可变参数，可以接受不定数量的参数，跟 Python 的可变参数一个意思 
+        ; # 可变参数
+        ; Any Number Of Arguments
+        ;     [Arguments]    @{varargs}
+        ;     Log Many    @{varargs}
+
+        ; One Or More Arguments
+        ;     [Arguments]    ${required}    @{rest}
+        ;     Log Many    ${required}    @{rest}
+
+        ; Required, Default, Varargs
+        ;     [Arguments]    ${req}    ${opt}=42    @{others}
+        ;     Log    Required: ${req}
+        ;     Log    Optional: ${opt}
+        ;     Log    Others:
+        ;     \   FOR    ${item}    IN    @{others}
+        ;     \       Log    ${item}
+
+        ; *** Test Cases ***
+        ; testDefault
+        ;     Any Number Of Arguments    1    2    3    4
+        ;     One Or More Arguments    位参数    可变参数1    可变参数2
+        ;     Required, Default, Varargs    req    opt    o1    o2    o3
+    ; 关键字参数
+        ; 用  &{args} 声明参数时，就是代表关键字参数，可以接受不定数量的关键字参数，跟 Python 的关键字参数一个意思 
+        ; # 关键字参数
+        ; Kwargs Only
+        ;     [Arguments]    &{kwargs}
+        ;     Log    ${kwargs}
+        ;     Log Many    &{kwargs}
+
+        ; Positional And Kwargs
+        ;     [Arguments]    ${required}    &{extra}
+        ;     Log Many    ${required}    &{extra}
+
+        ; *** Test Cases ***
+        ; testKwargs
+        ;     ${dict}=    Create Dictionary    name=yy    age=19    sex=女    height=177
+        ;     Kwargs Only    &{dict}
+        ;     Positional And Kwargs    123    &{dict}
+
+; RF 的变量和常量
+; 常量
+    ; 上面 log 关键字后面跟的参数都是常量，且类型均是字符串
+    ; 【RF 里面，常量默认是字符串类型，如果需要整形、浮点数、列表，需要调用关键字来转换 or 生成】
+; 变量
+    ; RF中的变量，实质上就是一个Python变量，它指向一个Python对象
+    ; 所以RF变量对应的是什么Python对象，它就是什么类型的对象
+    ; 变量标识符:{变量名}
+    ; RF 的变量类型
+        ; | 变量类型      | 变量中文 | 语法          |
+        ; |-------------|--------|--------------|
+        ; | scalar      | 标量     | ${SCALAR}    |
+        ; | list        | 列表     | @{LIST}      |
+        ; | dict        | 字典     | &{DICT}      |
+        ; | 环境变量     | 环境变量  | %{ENV_VAR}   |
+    ; 变量的注意事项
+        ; 不区分大小写： ${var} 和 ${VAR} 指向同一个对象
+        ; 变量名若有下划线和空格都会被忽略： ${my var}  或  ${myVar} 
+        ; ${var}    Set Variable    1234
+        ; log to console    ${VAR}
+
+        ; ${Var 11}    Set Variable    5678
+        ; log to console    ${var11}
+; Scalar 变量
+    ; 当传递 Scalar 变量给关键字作为参数的时候， 就是直接把它所对应的 Python 对象类型传递给关键字对应的函数
+    ; 每个 List 变量和 Dict 变量，也是 Scalar 变量
+    ; *** Variables ***
+    ; ${Var1}    测试123
+    ; ${Var2}    123456
+
+    ; *** Test Cases ***
+    ; Variables
+    ;     # 打印 Variables 的变量
+    ;     log to console    Var1 is ${Var1}
+    ;     log to console    Var2 is ${Var2}
+    ;     ${var1}    Set Variable    ${Var1}
+    ;     log to console    Var1 is ${var1}
+    ;     log to console    Var2 is ${Var2}
+    ;     ${var3}    Set Variable If    ${var1} > 2    条件表达式成功
+    ;     log to console    ${var3}
+    ; 在 Variables 表中定义变量，可以直接在变量后面跟值，不用加 set variable 
+    ; 给标量赋值，声明变量后面可加=，也可不加
+    ; 在 Test Cases 表中定义变量，声明变量之后，一定要接 set variable 或 set variable if 关键字，然后再接需要设置的值
+    ; 变量间，可以互相赋值
+
+; List 变量
+    ; 如果一个标量的值是一个列表，或者类似列表的其它序列，可以将该变量作为列表变量使用，格式为 @{EXAMPLE}
+    ; 测试代码分成了四部分
+        ; 声明列表变量，有两种声明列表变量的方式，以及两种生成列表值的方式
+        ; 打印列表
+        ; 循环打印
+        ; 获取列表长度
+    ; *** Variables ***
+    ; # 通过 Python 的方式声明一个列表变量
+    ; ${lists}    evaluate    [1, 2, 3, 4]
+    ; # 通过关键字创建一个列表变量
+    ; ${lists1}=    Create List    1    2    3    4
+    ; # 声明一个列表变量,同${listss}
+    ; @{lists2}    evaluate    [1, 2, 3, 4, 5]
+    ; # 声明一个列表变量,同${lists1}
+    ; @{lists3}=    Create List    1    2    3    4    5
+
+    ; *** Test Cases ***
+    ; ListVariable
+    ;     # 打印列表
+    ;     log to console    ${lists}
+    ;     log to console    ${lists2}
+    ;     log to console    ${lists3}
+
+    ;     # 遍历列表变量
+    ;     FOR    ${var}    IN    @{lists}
+    ;         log to console    ${var}
+    ;     END
+
+    ;     # 遍历列表变量
+    ;     FOR    ${var}    IN    @{lists2}
+    ;         log to console    ${var}
+    ;     END
+
+    ;     # 打印列表变量长度
+    ;     ${length}    Get Length    ${lists}
+    ;     log to console    ${length}
+    ; @{lists} 和 ${lists} 的区别
+        ; 列表变量也是标量的一种，只是值是列表，所以可以看成列表变量
+        ; ${lists} 可以看成是一个列表整体， @{lists} 可以看成整体拆成一个个单独的元素
+        ; ${lists} 在 Python 里面就是一个 list ，然后 @{lists} 就是展开其 lists 中的每个元素，作为多个参数传入，和 *args 一样效果，在Python 里叫可变参数
+; 获取列表变量中的值
+    ;  ${变量名}[下标值] 
+    ;  ${变量名[下标值]} 
+        ; 系统也提示啦，我们应该用 ${list}[0] 这种格式来代替 @{list} 获取列表的某个值
+        ; 下标也是从 0 开始
+        ; 下标可以传变量 ${list}[${index}]
+    ; *** Variables ***
+    ; ${lists1}=    Create List    1    2    3    4    5
+    ; @{lists2}=    Evaluate    [1, 2, 3, 4, 5]
+
+    ; *** Test Cases ***
+    ; getListVar
+    ;     # @{} - 获取第一个
+    ;     log to console    @{lists2}[0]
+    ;     log to console    @{lists1}[0]
+
+    ;     # ${} - 获取第一个
+    ;     log to console    ${lists1}[0]
+    ;     log to console    ${lists2}[0]
+
+    ;     # ${} - 获取最后一个
+    ;     log to console    ${lists1}[-1]
+    ;     log to console    ${lists2}[-1]
+
+    ;     # @{} - 获取最后一个
+    ;     log to console    @{lists1}[-1]
+    ;     log to console    @{lists2}[-1]
+
+    ;     # @{} - 获取第一个，报错
+    ;     log to console    @{lists1}[0]
+
+; Dict 变量
+; 如果一个标量的值是一个字典，可以将该变量作为字典变量使用，格式为  &{EXAMPLE}
+    ; *** Test Cases ***
+    ; DictVariables
+    ;     # log to console    &{dict1}    # 报错
+    ;     log to console    ${dict2}
+
+    ;     # 通过 Python 的方式声明一个字典变量
+    ;     ${dicts}=    Evaluate    {"name":"yy", "age":19}
+    ;     # 通过关键字创建一个列表变量
+    ;     ${dicts1}=    Create Dictionary    name=yy    age=20
+
+    ;     # 声明一个列表变量，并赋值
+    ;     &{dicts2}=    Evaluate    {"name":"polo", "age":22}
+    ;     # 通过关键字创建一个字典变量
+    ;     &{dicts3}=    Create Dictionary    name=张三    age=21
+
+    ;     log to console    ${dicts}
+    ;     log to console    ${dicts1}
+    ;     log to console    ${dicts2}
+    ;     log to console    ${dicts3}
+; &{dict} 和  ${dict} 的区别
+; 字典变量也是标量的一种，只是值是字典，所以可以看成字典变量
+; ${dict} 可以看成是一个完整的字典对象， &{dict} 可以看成整体拆成一个个单独的键值对
+; ${dict} 在 Python 里面就是一个 dict ，然后&{dict} 就是展开其 dict 中的每个键值对，
+;   作为多个参数传入，和 **kwargs 一样效果，在Python 里叫关键字参数
+; 获取字典变量中的值
+    ; 只有一种获取格式： ${dicts}[key]
+    ; 我们应该用 ${dicts}[key] 代替 &{dicts}[key] 
+    ; 键可以传变量 &{DICT}[${KEY}] 
+    ; 重点： ${dict.key} 会报错哦，不可取
+
+; RF 循环的详细使用
+    ; RF用  :FOR 或 FOR 来实现循环，没有 While 循环
+    ;  :FOR 是过时的循环写法，建议写 FOR
+    ; 如果  IN 后面跟的是一个 List 变量，必须用 @{list} 的格式哦！
+    ; 循环体内的语句需要缩进两个空格以上
+    ; 如果 IN 后面接的值太多，可以换行，需要通过 ... 来表示接着上一行的内容
+    ; 注意：  FOR  和  IN 都不能小写哦 
+        ; *** Test Cases ***
+        ; Example
+        ;     FOR    ${animal}    IN    cat    dog
+        ;         log to console    ${animal}
+        ;     END
+        ;     log to console    Outside Loop
+
+        ; Second Example
+        ;     FOR    ${var}    IN    1    2    3
+        ;     ...    4    5    6    7    8    9
+        ;         log to console    ${var}
+        ;     END
+
+        ; List Example
+        ;     ${list}=    Create List    1    2    3    4    5    6
+        ;     FOR    ${var}    IN    @{list}
+        ;         log to console    ${var}
+        ;     END
+    ; :FOR 旧格式循环的栗子
+        ; 和 FOR 不同，不需要在循环结束后写 END
+        ; 但重点来了：循环体内，每一行开头都需要写 \ 【因为在RF 3.2 中， :FOR  不再起作用，如果要支持旧格式，就需要 \ 进行转义】
+        ; 注意：:FOR 可以小写，但是 IN 不可以（官网说 IN 也可以小写，但是试了一遍不可以哦）
+        ; *** Test Cases ***
+        ; Old Loop
+        ;     :FOR    ${animal}    IN    cat    dog
+        ;     \    log to console    ${animal}
+        ;     log to console    Outside Loop
+
+        ; Old Loop List
+        ;     ${list}=    Create List    1    2    3    4    5    6
+        ;     :FOR    ${animal}    IN    @{list}
+        ;     \    log to console    ${animal}
+        ;     log to console    Outside Loop
+    ; range 的用法
+        ; 在Python 中，我们有常用的  range() 方法，RF 也有类似的用法
+        ; *** Test Cases ***
+        ; Start and end
+        ;     [Documentation]    循环从1-10
+        ;     FOR    ${index}    IN RANGE    1    11
+        ;         log to console    ${index}
+        ;     END
+
+        ; Also step given
+        ;     [Documentation]    循环从5-26，步长=10
+        ;     FOR    ${index}    IN RANGE    5    26    10
+        ;         log to console    ${index}
+        ;     END
+
+        ; Negative step
+        ;     [Documentation]    循环从13到-13，步长=-10
+        ;     FOR    ${index}    IN RANGE    13    -13    -10
+        ;         log to console    ${index}
+        ;     END
+
+        ; Arithmetic
+        ;     [Documentation]    Arithmetic with variable
+        ;     ${var}    Set Variable    5
+        ;     FOR    ${index}    IN RANGE    ${var} + 1
+        ;         log to console    ${index}
+        ;     END
+
+        ; Float parameters
+        ;     [Documentation]    Loops over values 3.14, 4.34, and 5.54
+        ;     FOR    ${index}    IN RANGE    3.14    6.09    1.2
+        ;         log to console    ${index}
+        ;     END
+    ; enumerate 的用法 
+        ; 在 Python 中，有 enumerate() 函数，遍历列表时可以追踪每个元素的索引位置；
+        ; 在 RF 中通过 IN ENUMERATE 关键字来实现类似的效果
+        ; IN ENUMERATE 是连在一起用的哦，中间最多一个空格，并且是大小写敏感的，不可以写成小写！
+        ; 使用 IN ENUMERATE ，需要用单独的一个变量去接住索引值，如 ${index}
+        ; 如果只用一个变量的话，那么每次循环返回的就是一个列表，第一个元素就是索引值，可以通过下标 [0] 去获取；后面的值就是列表的值
+        ; *** Variables ***
+        ; ${list}=    evaluate    [1, 2, 3, 4, 5]
+
+        ; *** Test Cases ***
+        ; For-in-enumerate
+        ;     FOR    ${index}    ${item}    IN ENUMERATE    @{list}
+        ;         Log Many    ${index}    ${item}
+        ;     END
+
+        ; For-in-enumerate with two values per iteration
+        ;     FOR    ${index}    ${en}    ${cn}    IN ENUMERATE
+        ;         cat    猫
+        ;         dog    狗
+        ;         Log    "${en}" in English is "${cn}" (index: ${index})
+        ;     END
+
+        ; For-in-enumerate with one loop variable
+        ;     [Documentation]    只用一个变量在循环中
+        ;     ${list}=    evaluate    [1, 2, 3, 4, 5]
+        ;     FOR    ${x}    IN ENUMERATE    @{list}
+        ;         Length Should Be    ${x}    2
+        ;         Log    Index is ${x}[0] and item is ${x}[1]
+        ;     END
+    ; 遍历 Dict 变量
+        ; 循环 Dict 变量时，可以通过 ${key} 和 ${value} 分别获取每次循环的键和值
+        ; IN ENUMERATE 也可以获取键值对的索引值，但起始值是 1
+        ; *** Variables ***
+        ; &{DICT}    a=1    b=2    c=3
+
+        ; *** Test Cases ***
+        ; 遍历字典
+        ;     FOR    ${key}    ${value}    IN    &{DICT}
+        ;         log to console    Key is "${key}" and value is "${value}".
+        ;     END
+
+        ; 遍历字典并返回索引
+        ;     FOR    ${index}    ${key}    ${value}    IN ENUMERATE    &{DICT}
+        ;         log to console    On round ${index} key is '${key}' and value is '${value}'.
+        ;     END
+
+        ; 遍历多个字典
+        ;     &{more}=    Create Dictionary    e=5    f=6
+        ;     FOR    ${key}    ${value}    IN    &{DICT}    a=4    &{more}    g=7
+        ;         log to console    Key is "${key}" and value is "${value}".
+        ;     END
+        ; 如果只用一个 ${item} 变量来获取键值对的话，它将是一个键值对列表（只有两个值）， ${item}[0] 是键， ${item}[1] 是值
+        ; 再加上 IN ENUMERATE 的话，它就是一个索引+键值对列表（有三个值）， ${item}[0] 是索引值
+        ; *** Test Cases ***
+        ; One Loop variable
+        ;     FOR    ${item}    IN    &{DICT}
+        ;         log to console    Key is '${item}[0]' and value is '${item}[1]'.
+        ;     END
+
+        ; One Loop variable with enumerate
+        ;     FOR    ${item}    IN ENUMERATE    &{DICT}
+        ;         log to console    On round ${item}[0] key is '${item}[1]' and value is '${item}[2]'.
+        ;     END
+    ; 退出循环的例子
+        ; 相当于 Python 里面的  break ；退出循环有两个关键字
+            ; exit for loop：强制退出循环
+            ; exit for loop if：有条件的退出循环
+        ; 如果要使用 exit for loop  时，我们可以借助 run keyword if 或者 run keyword unless
+        ; 凡是关键字有  if ，它后面可以直接跟判断表达式
+        ; *** Test Cases ***
+        ; Exit 例子1
+        ;     ${list}=    Create List    1    2    3    4
+        ;     FOR    ${var}    IN    @{list}
+        ;         log to console    ${var}
+        ;         Exit For Loop If    ${var} == 3
+        ;     END
+
+        ; Exit 例子2
+        ;     ${list}=    Create List    1    2    3    4
+        ;     FOR    ${var}    IN    @{list}
+        ;         log to console    ${var}
+        ;         Exit For Loop
+        ;     END
+
+        ; Exit 例子3
+        ;     ${list}=    Create List    1    2    3    4
+        ;     FOR    ${var}    IN    @{list}
+        ;         log to console    ${var}
+        ;         Run Keyword If    ${var} == 2    Exit For Loop
+        ;     END
+    ; 继续循环的例子
+        ; 相当于 Python 里面的  continue ；继续循环有两个关键字
+            ; Continue For Loop
+            ; Continue For Loop If
+        ; *** Test Cases ***
+        ; 循环控制的例子
+        ;     ${text} =    Set Variable    ${EMPTY}    # 设置变量为空
+        ;     FOR    ${var}    IN    one    two    three
+        ;         Continue For Loop If    '${var}' == 'two'
+        ;         ${text} =    Set Variable    ${text}${var}
+        ;     END
+        ;     log to console    ${text}
+        ;     Should Be Equal    ${text}    onethree
+
+; Variables 表的详细使用和具体例子
+; Variables 表中声明变量
+    ; 可以声明 Variables 表的地方
+        ; 资源文件
+        ; 测试套件文件
+    ; 在测试套件文件中声明变量表 Variables
+        ; 整个套件里面的 Settings、Test Case、Keywords 表都会生效
+    ; 在资源文件中声明变量表 Variables
+        ; 只要导入了该资源文件的测试套件，都可以使用 Variables 表的变量
+; Variables 表中定义 Scalar 变量的例子
+    ; *** Variables ***
+    ; ${name}      用户名
+    ; ${password}  123456
+    ; ${num1}      123
+    ; ${num2}      456
+
+    ; *** Settings ***
+    ; Suite Setup    add
+
+    ; *** Test Cases ***
+    ; testVar
+    ;     log to console    ${name}
+    ;     log to console    ${password}
+
+    ; testKeyw
+    ;     add
+
+    ; *** Keywords ***
+    ; add
+    ;     ${sum}=    evaluate    ${num1} + ${num2}
+    ;     log to console    ${sum}
+; Variables 表中定义 List 变量的例子
+    ; 只有通过 @{list} 声明的变量，才是列表变量；
+    ; 如果用 ${list} 声明，即使后面接的是列表值，也会当做一个整体（看测试结果 ${lists2} ）
+    ; 如果用 [1,2,3,4] 赋值的话，也只会被当做一个列表中的一个元素（看测试结果  @{lists} ）
+    ; 重点：不同值之间也要空两个空格，不然 RF 会识别成同一个元素值
+    ; *** Variables ***
+    ; ${list}     [1,2,3,4,5]
+    ; @{lists}    [1,2,3,4,5]
+    ; ${lists2}    1    2    3    4    5
+    ; @{lists3}    1    2    3    4    5
+    ; *** Settings ***
+    ; Suite Setup    run keywords    forlist1
+    ; ...    AND    forlist3
+    ; *** Test Cases ***
+    ; testListWith $
+    ;     log to console    ${list}
+    ;     log to console    ${lists}
+    ;     log to console    ${lists2}
+    ;     log to console    ${lists3}
+    ; *** Keywords ***
+    ; forlist1
+    ;     FOR    ${var}    IN    @{lists}
+    ;         log to console    ${var}
+    ;     END
+    ; forlist3
+    ;     FOR    ${var}    IN    @{lists3}
+    ;         log to console    ${var}
+    ;     END
+; Variables 表中定义 Dict 变量的例子
+    ; 只有通过 &{dicts} 声明的变量，才是字典变量；
+    ; 如果用 ${dicts} 声明，即使后面接的是字典，也会当做一个整体（看测试结果 ${user} 的输出值)
+    ; 重点：不同 key=value 之间也要空两个空格，不然 RF 会识别成同一个值
+    ; *** Variables ***
+    ; &{info}    name=小博客    age=13
+    ; ${user}    name=yy    age=20
+
+    ; *** Settings ***
+    ; Suite Setup    setup
+
+    ; *** Test Cases ***
+    ; testVar
+    ;     Log To Console    ${user}
+
+    ; *** Keywords ***
+    ; setup
+    ;     FOR    ${key}    ${value}    IN    &{info}
+    ;         Log To Console    ${key}    ${value}
+    ;     END
+; 扩展关键字
+    ; 扩展关键字？就是你自己写的 Python 文件，里面包含了函数或者类
+    ; 然后 RF 导入这个 Python 模块，就可以调用函数或者类方法，它们就是扩展关键字
+; Python 模块作为测试库
+    ; 模块文件名作为测试库的名字
+    ; 比如：Python 模块名叫 MyLibrary，文件名是 MyLibrary.py，那么测试库的名字就叫做 MyLibrary
+; Python 模块和 Robot 文件同目录下的例子
+    ; _前缀的方法不会作为关键字，在Python里面， _ 开头的方法是私有方法，RF 不会识别到它
+    ; Python 方法作为关键字也是大小写不敏感的
+    ; RF 中会把关键字的 _ 和单个空格忽略掉，所以 returndict、return dict、return_dict 都是调用同一个关键字
+    ; test/
+    ; ├── MyLibrary.py      # 自定义的 Python 库文件
+    ; └── test.robot        # Robot Framework 测试用例文件
+    ; python：
+        ; def returnlist():
+        ;     return [i for i in range(10)]
+
+        ; def return_dict():
+        ;     return {"a": "hahhahahaahah"}
+
+        ; # 以下划线开头的函数不能作为RF关键字
+        ; def _returnlist2():
+        ;     return [1, 2]
+    ; robot 代码
+        ; *** Settings ***
+        ; Library    ./mylibrary.py
+
+        ; *** Test Cases ***
+        ; testList
+        ;     ${lists}    returnlist
+        ;     ${lists1}    returnlist
+        ;     Log To Console    ${lists}
+        ;     Log To Console    ${lists1}
+
+        ; testDict
+        ;     ${dicts}    return dict
+        ;     ${dicts1}    returndict
+        ;     ${dicts2}    return_dict
+        ;     Log To Console    ${dicts}
+        ;     Log To Console    ${dicts2}
+
+        ; testPrivate
+        ;     ${lists}    _returnlist2
+; Python 类作为测试库的例子
+    ; 项目目录
+        ; 15_扩展关键字/
+        ; ├── pylib/
+        ; │   ├── __init__.py      # 初始化文件，标识 pylib 为一个包
+        ; │   ├── pythonlib.py     # 自定义的 Python 库文件
+        ; │   └── tlib2.py         # 另一个自定义的 Python 库文件
+        ; └── test/
+        ;     └── testrf/
+        ;         ├── testclass2.robot  # Robot Framework 测试用例文件
+        ;         ├── testclass3.robot  # Robot Framework 测试用例文件
+        ;         └── testclass4.robot  # Robot Framework 测试用例文件
+    ; 所有 Python 测试代码都在 tlib2.py 里面
+    ; 最终运行是在【15_扩展关键字】目录下运行的，命令如下：
+    ; robot -P . testrf
+    ; 栗子一：类初始化不需要传参
+        ; 在类里面， _ 前缀的方法不会当做关键字
+        ; 同样，类中声明的方法当做关键字的话，大小写不敏感
+        ; python
+        ; class SubLibrary:
+        ;     def __init__(self):
+        ;         pass
+
+        ;     def returnint(self):
+        ;         return 2020
+
+        ;     def _returnint2(self):
+        ;         return 4
+        ; robot 代码
+        ; *** Settings ***
+        ; Library    pylib.tlib2.Sublibrary
+
+        ; *** Test Cases ***
+        ; test
+        ;     ${var}    ReturnInt
+        ;     Log To Console    ${var}
+    ; 栗子二：类初始化需要传参
+        ; 如果类的 __init__ 初始化方法需要传参，则在导入库后面跟对应的参数列表
+        ; 拓展 Python 知识点：先有类对象，还是先执行类初始化方法？
+            ;  __new__ 方法产生对象
+            ;  __init__ 对象的初始化方法
+        ; 先 new 一个对象，再 init 一个对象
+        ; python
+        ; from robot.api import logger
+        ; class SubLibrary2:
+        ;     def __init__(self, host, port, table='test'):
+        ;         self.host = host
+        ;         self.port = port
+        ;         self.table = table
+
+        ;     def printaddr2(self):
+        ;         logger.console('host:%s,port:%s,table:%s' % (self.host, self.port, self.table))
+        ; robot
+        ; *** Settings ***
+        ; # 导入类需要初始化---执行初始化方法
+        ; Library    pylib.tlib2.SubLibrary2    localhost    3306    student
+
+        ; *** Test Cases ***
+        ; case1
+        ;     PrintAddr2
+    ; 栗子三：类名和模块名相同
+        ; 如果类名和模块名相同，可以不用导入类名
+        ; python
+        ; from robot.api import logger
+
+        ; class tlib2:
+        ;     def __init__(self, host, port):
+        ;         self.host = host
+        ;         self.port = port
+
+        ;     def printaddr(self):
+        ;         logger.console('host:%s,port:%s' % (self.host, self.port))
+        ; robot
+        ; *** Settings ***
+        ; # 类名和模块名相同--导入的时候可以不指定类名
+        ; Library    pylib.tlib2    127.0.0.1    9090
+
+        ; *** Test Cases ***
+        ; case
+        ;     PrintAddr
+    ; 栗子四：使用路径法导入 Python 模块
+        ; 如果用路径法，需要注意导入 Python 模块需要有文件后缀哦，且用 / 来表示目录下
+        ; 重点：使用路径法，只能导入和模块名相同的类名！
+        ; Python 代码用的还是栗子三的
+        ; robot
+        ; *** Settings ***
+        ; # 导入类需要初始化---执行初始化方法
+        ; Library    ./pylib/tlib3.py    localhost    3306
+        ; *** Test Cases ***
+        ; case1
+        ;     PrintAddr
+; Python 扩展库的搜索规则
+; 统一的规则
+    ; 先根据 robot 文件自身当前目录下查找库文件
+    ; 如果没有找到则再根据 --pythonpath 和 -P 提供的搜索路径进行搜索
+    ; 最后找 Python 安装的路径
+; Python 库引入了其他模块
+    ; 当 robot 文件导入的 Python 测试库引入了其他模块时，应该怎么写导入路径？
+    ; 确保导入的模块路径和RF导入的模块起始路径统一
+    ; 可以看到 robot 文件引入的路径是 pylib 开头， test 模块引入 login 模块的路径也是 pylib 开头
+    ; 如果路径是 login 开头导入，那么运行robot文件将会报错（如下图，包含了解析错误）    
+    ; 举例：testother.robot  导入 test.py 模块， test.py  模块引入了 login.py 模块的方法
+        ; 目录结构
+        ; othertest/
+        ; │
+        ; └── pylib/
+        ;     ├── __init__.py      # 初始化文件，标识 pylib 为一个包
+        ;     ├── login.py         # 自定义的登录库文件
+        ;     └── test.py          # 另一个自定义的库文件
+        ; │
+        ; └── __init__.py         # 初始化文件，标识 othertest 为一个包
+        ; └── testother.robot     # Robot Framework 测试用例文件
+        ; login.py
+            ; from robot.api import logger
+            ; 
+            ; def login_test():
+            ;     logger.console('test login')        
+        ; test.py
+            ; from pylib.login import login_test
+            ; # from login import login_test 报错
+
+            ; def test():
+            ;     login_test()        
+        ; robot
+            ; *** Settings ***
+            ; Library    pylib.test
+
+            ; *** Test Cases ***
+            ; test
+            ;     Test        
+; Python 库中的 class 存在继承
+    ; 当 robot 文件导入 Python 测试库的类继承了另一个类，应该怎么写导入路径？
+    ; 正确写法
+        ; 确保导入的模块路径和RF导入的模块起始路径统一
+        ; 使用的时候 RF 文件只需导入子类即可
+    ; 看栗子：test.robot 引入了 other.py  模块下的 Child 类，而 Child 类继承了 Base.py 模块下的 Father 类
+        ; 目录结构
+            ; testClass/
+            ; └── pylib/
+            ;     ├── __init__.py      # 初始化文件，标识 pylib 为一个包
+            ;     ├── Base.py          # 自定义的基础库文件
+            ;     └── other.py         # 另一个自定义的库文件
+            ; └── test.robot           # Robot Framework 测试用例文件
+        ; base.py
+            ; from robot.libraries.BuiltIn import logger
+
+            ; class Father:
+            ;     def __init__(self):
+            ;         logger.console('init Father')
+
+            ;     def money(self):
+            ;         return '$10000'        
+        ; other.py
+            ; from robot.api import logger
+            ; from pylib.Base import Father
+
+            ; class Child(Father):
+            ;     def __init__(self):
+            ;         Father.__init__(self)
+            ;         logger.console('init Child')
+
+            ;     def use_money(self):
+            ;         return self.money()
+
+            ;     def make_money(self):
+            ;         return '$9999'
+        ; robot
+            ; *** Settings ***
+            ; Library    pylib.other.Child
+
+            ; *** Test Cases ***
+            ; acase
+            ;     ${m1}    Use_Money
+            ;     Log To Console    ${m1}
+            ;     ${m2}    Make_Money
+            ;     Log To Console    ${m2}

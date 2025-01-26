@@ -1,0 +1,182 @@
+; BuiltIn 测试库常用的关键字列表
+; C 开头常用关键字列表
+; | 关键字                    | 参数                   |  用法                                      |
+; |--------------------------|-----------------------|---------------------------------------|
+; | Convert To Boolean       | item                  | 把 item 转换成布尔类型，true / false   |
+; | Convert To Integer       | item, base=None       | 把 item 转换成整数，base 可以设置为 2, 8, 16，代表转换成二进制、八进制、十进制 |
+; | Convert To Number        | item, precision=None  | 把 item 转换成浮点数、precision >= 0: 四舍五入、precision < 0: 取接近 10 的倍数的整数 |
+; | Convert To String        | item                  | 把 item 转换成 Unicode 字符串          |
+; | Create List              | *items                | 返回包含指定 items 的列表（创建一个列表） |
+; | Continue For Loop        |                       | 跳过当前的循环，并继续下一个循环       |
+; | Continue For Loop If     | condition             | 如果 condition = True，则跳过当前循环  |
+; E 开头常用关键字列表
+; | 关键字               | 参数                                       | 用法                                      |
+; |---------------------|-------------------------------------------|-----------------------------------------|
+; | Evaluate            | expression, modules=None, namespace=None  | 执行 expression 用 Python 执行，然后返回结果（后面细说） |
+; | Exit For Loop       |                                           | 停止执行 FOR 循环                        |
+; | Exit For Loop If    | condition                                 | 如果 condition = True，则停止执行 FOR 循环 |
+; G 开头常用关键字列表
+; | 关键字            | 参数                          | 用法                                      |
+; |-----------------|-----------------------------|-----------------------------------------|
+; | Get Count       | container, item             | 返回并计数，从 container 中找到 item 的次数  |
+; |                 |                             | 例如：Python 字符串和列表，以及具有 count 方法，或可以转换为 Python 列表的对象 |
+; | Get Length      | item                        | 返回 item 的长度，整数                     |
+; |                 |                             | 注意：item 可以是任何具有长度的内容，字符串、列表、字典 |
+; |                 |                             | 调用顺序：item 的 __len__ 方法 -> length() 或 size() 方法 -> length 属性，若均无，则报错 |
+; | Get Time        | format=timestamp            | 返回当前的时间                           |
+; |                 | time=_NOW                  | 默认返回的格式：2006-02-24 15:08:31     |
+; |                 |                             | format 可选参数：year, month, day, hour, min, sec |
+; | Get Variable Value| name, default=None        | 返回变量值或默认值（如果变量不存在）       |
+; | Get Variables    | no_decoration=False        | 返回当前前使用的所有变量的字典             |
+; import 家族常用关键字列表
+; | 关键字              | 参数            | 用法               |
+; |-------------------|----------------|-------------------|
+; | Import Library     | name, *args    | 导入测试库         |
+; | Import Resource    | path           | 导入资源文件       |
+; | Import Variables    | path, *args    | 导入变量文件       |
+; L、P 开头常用关键字列表
+; | 关键字                | 参数                          | 用法                                      |
+; |---------------------|-----------------------------|-----------------------------------------|
+; | Length Should Be    | item, length, msg=None      | 判断 item 的长度是否等于 length，否则报错，错误信息为 msg |
+; | Log                 | message, level=INFO, html=False | 把 message 打印到 log.html 上            |
+; | Log Many            | *message                    | 支持传多个 message，日志级别 INFO，无修改  |
+; | Log To Console      | message                     | 把 message 打到控制台                    |
+; | Pass Execution If   | condition, message, *tags   | 如果 condition = True，则跳过执行有 skip 状态的部分 |
+; 自定义关键字Keyword常用关键字列表
+; | 关键字                     | 参数                          | 用法                                      |
+; |--------------------------|-----------------------------|-----------------------------------------|
+; | Keyword Should Exist     | name, msg=None              | 判断当前关键字是否存在，否则报错，错误信息为 msg |
+; | Run Keyword              | name, *args                 | 执行指定的关键字                        |
+; |                          |                             | 重点：提供的 args，可以是常量、变量、其他关键字返回值，命令行输入 |
+; | Run Keywords             | keywords                    | 按顺序执行所有给定的关键字，注意需要用 AND 来连接不同的关键字 |
+; |                          |                             | 如：run keywords log 1 AND log 2 AND log 3 |
+; | Run Keyword If          | condition, name, *args      | 如果 condition = True，执行指定的关键字  |
+; | Run Keyword And Continue On Failure | name, *args      | 执行指定的关键字，即使发生错误也继续执行  |
+; | Run Keyword And Return   | name, *args                 | 执行指定的关键字，并返回其关键字的返回值  |
+; | Run Keyword And Return If | condition, name, *args      | 如果 condition = True，执行指定的关键字，并返回其关键字的返回值 |
+; | Run Keyword Unless       | condition, name, *args      | 如果 condition = False，执行指定的关键字  |
+; | Wait Until Keyword Succeeds | retry, retry_interval, name | 如果关键字执行失败，则重新运行 retry 次，每次间隔 retry_interval |
+; teardown 作用域的常用关键字列表
+; 注意：仅能在Suite Teardown 或 Test Teardown 设置后面用，否则会报错
+; | 关键字                          | 参数            | 生效作用域         | 用法                                      |
+; |-------------------------------|----------------|------------------|-----------------------------------------|
+; | Run Keyword If All Critical Tests Passed | name, *args | Suite Teardown   | 如果所有关键测试都通过，则执行指定关键字  |
+; | Run Keyword If All Tests Passed        | name, *args | Suite Teardown   | 如果所有测试都通过，则执行指定关键字      |
+; | Run Keyword If Any Critical Tests Failed | name, *args | Suite Teardown   | 如果任何关键测试失败，则执行指定关键字    |
+; | Run Keyword If Any Tests Failed         | name, *args | Suite Teardown   | 如果任何测试失败，则执行指定关键字        |
+; | Run Keyword If Test Failed              | name, *args | Test Teardown    | 如果测试失败，则执行指定关键字            |
+; | Run Keyword If Test Passed              | name, *args | Test Teardown    | 如果测试通过，则执行指定关键字            |
+; | Run Keyword If Timeout Occurred         | name, *args | Test Teardown    | 如果测试或关键字超时，则执行指定关键字    |
+; Set 开头常用关键字列表
+; | 关键字                     | 参数            | 用法                                      |
+; |--------------------------|----------------|-----------------------------------------|
+; | Set Global Variable      | name, *values  | 使变量在所有 test 和 suite 中全局可用    |
+; | Set Suite Documentation  | doc            | 设置 suite 级别的文档                    |
+; | Set Suite Variable       | name, *values  | 使变量在当前 suite 范围内的任何地方都可用 |
+; | Set Variable             | *values        | 返回指定的值，一般用于变量赋值操作        |
+; | Set Variable If          | condition, *values | 如果 condition = True，返回指定的值，一般用于变量赋值操作 |
+; Should 开头常用关键字列表
+; 重点：有 should be 就有 should not be
+; | 关键字                     | 参数                          | 用法                                      |
+; |--------------------------|-----------------------------|-----------------------------------------|
+; | Should Be Empty          | item, msg=None              | 验证 item 是否为空                       |
+; | Should Not Be Empty      | item, msg=None              | 验证 item 是否不为空                     |
+; | Should Be Equal          | first, second               | 验证 first 和 second 的值是否相等       |
+; | Should Not Be Equal      | first, second               | 验证 first 和 second 的值是否不相等     |
+; | Should Be True           | condition                   | 验证 condition 是否为 True              |
+; | Should Contain           | container, item             | 如果 container 包含 item 则成功，否则失败 |
+; | Should Contain Any       | container, *items           | 如果 container 包含全部 items 则成功，否则失败，item 可传多个值，或列表 |
+; | Should Contain X Times   | container, item, count      | 如果 container 里出现 count 次，则成功，否则失败 |
+; | Should End With          | str1, str2                 | 如果 str1 不是以 str2 结束，则失败      |
+; | Should Start With        | str1, str2                 | 如果 str1 不是以 str2 开始，则失败      |
+; | Should Match Regexp      | string, pattern             | 如果 string 和正则表达式 pattern 不匹配，则失败 |
+; 其他关键字列表
+; | 关键字                     | 参数                          | 用法                                      |
+; |--------------------------|-----------------------------|-----------------------------------------|
+; | Sleep                    | time                        | 暂停测试执行 time                       |
+; |                          |                             | time 输入格式：1 day 2 hours 3 minutes 4 seconds 5 milliseconds 或 1d 2h 3m 4s 5ms |
+; | Variable Should Exist     | name                        | 判断变量是否存在于当前范围内            |
+; | Variable Should Not Exist | name                        | 判断变量是否不存在于当前范围内          |
+
+; DateTime 测试库常用的关键字列表 
+; | 关键字                     | 参数                          | 用法                                      |
+; |--------------------------|-----------------------------|-----------------------------------------|
+; | Add Time To Date        | date, time                  | 添加 time 到 date 并返回结果日期        |
+; | Add Time To Time        | time1, time2               | 添加 time1 到 time2，并返回结果时间     |
+; | Convert Date            | date                        | 将 date 转换成指定日期格式 (2014-05-28 12:05:00) |
+; | Convert Time            | time                        | 将 time 转换成指定时间格式 (01:01:02)   |
+; | Get Current Date        |                             | 返回本地时间或 UTC 时间 (2014-06-12 20:00:58.946) |
+; | Subtract Date From Date  | date1, date2               | 返回 date1 减去 date2 的时间            |
+; | Subtract Time From Date  | date, time                  | 从 date 中减去 time，并返回结果日期     |
+; | Subtract Time From Time  | time1, time2               | 从 time1 中减去 time2，并返回结果时间   |
+; Collections 测试库常用的关键字列表
+; BuiltIn 库中的以下关键字也可以与列表和词典一起使用
+; | 关键字                     | 适用对象   |
+; |--------------------------|----------|
+; | Create List              | lists    |
+; | Create Dictionary        | dicts    |
+; | Get Length               | both     |
+; | Length Should Be         | both     |
+; | Should Be Empty          | both     |
+; | Should Not Be Empty      | both     |
+; | Should Contain           | both     |
+; | Should Not Contain       | both     |
+; | Should Contain X Times   | lists    |
+; | Should Not Contain X Times| lists   |
+; | Get Count                | lists    |
+; A、C 开头的常用关键字列表
+; | 关键字                     | 参数列表                     | 描述                                      |
+; |--------------------------|-----------------------------|-----------------------------------------|
+; | Append To List           | list_, *values              | 将多个 values 添加到 list 的末尾        |
+; | Combine Lists            | *lists                      | 将给定的多个列表组合在一起并返回结果    |
+; |                          |                             | 注意：给定的列表不会被此关键字更改。    |
+; | Convert To Dictionary    | item                        | 将 item 转换成 Python 字典类型          |
+; | Convert To List          | item                        | 将 item 转换成 Python 列表类型          |
+; | Copy Dictionary          | dictionary, deepcopy=False  | 返回 dictionary 的副本                  |
+; |                          |                             | deepcopy：深拷贝                        |
+; | Copy List               | list_, deepcopy=False       | 复制并返回一个新列表                    |
+; | Count Values In List     | list_, value, start=0, end=None | 返回 value 在 list 中出现的次数         |
+; Dict 开头的常用关键字列表
+; 主要针对 Dict 变量的操作
+; | 关键字                          | 参数列表                                   | 描述                                      |
+; |-------------------------------|----------------------------------------|-----------------------------------------|
+; | Dictionaries Should Be Equal   | dict1, dict2, msg=None, values=True   | 判断 dict1 == dict2                     |
+; | Dictionary Should Contain Item | dict, key, value, msg=None             | 在 dict 中找到 key=value 键值对，否则报错 |
+; | Dictionary Should Contain Key  | dict, key, msg=None                     | 在 dict 中找到 key 这个键，否则报错     |
+; | Dictionary Should Contain Sub Dictionary | dict1, dict2, msg=None, values=True | 在 dict1 中找到 dict2 所有键值对，否则报错 |
+; | Dictionary Should Contain Value | dict, value, msg=None                  | 在 dict 中找到 value 这个值，否则报错  |
+; | Dictionary Should Not Contain Key | dict, key, msg=None                   | 在 dict 中不存在 key 这个键，否则报错  |
+; | Dictionary Should Not Contain Value | dict, value, msg=None                | 在 dict 中不存在 value 这个值，否则报错 |
+; Get 开头的常用关键字列表
+; | 关键字                     | 参数列表                          | 描述                                      |
+; |--------------------------|---------------------------------|-----------------------------------------|
+; | Get Dictionary Items     | dict, sort_keys=True            | 以列表的形式返回 dict 的键值对          |
+; | Get Dictionary Keys      | dict, sort_keys=True            | 以列表的形式返回 dict 的键              |
+; | Get Dictionary Values    | dict, sort_keys=True            | 以列表的形式返回 dict 的值              |
+; | Get From Dictionary       | dict, key                       | 从 dict 中获取 key 对应的值并返回，若不存在则报错 |
+; | Get From List            | list_, index                    | 返回 list 中的索引为 index 的值         |
+; | Get Index From List      | list_, value, start=0, end=None | 返回 value 在 list 中第一次出现的索引   |
+; | Get Slice From List      | list_, start=0, end=None       | 返回 list 的 [start:end] 部分列表       |
+; I、L 开头的常用关键字列表
+; 主要针对 List 变量的操作
+; | 关键字                     | 参数列表                          | 描述                                      |
+; |--------------------------|---------------------------------|-----------------------------------------|
+; | Insert Into List         | list_, index, value             | 将 value 插入 list 指定 index 的位置    |
+; | List Should Contain Sub List | list1, list2, msg=None, values=True | 如果在 list1 中找不到 list2 中的所有元素，则失败 |
+; | List Should Contain Value | list_, value, msg=None          | 如果从 list 中获取不到 value，则失败    |
+; | List Should Not Contain Value | list_, value, msg=None       | 如果从 list 中获取到 value，则失败      |
+; | Lists Should Be Equal    | list1, list2, msg=None, values=True, names=None, ignore_order=False | 如果 list1 的值不等于 list2 的值，则失败 |
+; R 开头的常用关键字列表
+; | 关键字                     | 参数列表                          | 描述                                      |
+; |--------------------------|---------------------------------|-----------------------------------------|
+; | Remove Duplicates        | list_                          | 将 list 里面的所有值去重                |
+; | Remove From Dictionary    | dict, *keys                   | 从 dict 中删除给定的 keys，可以指定多个  |
+; | Remove From List         | list_, index                   | 从 list 中删除并返回指定 index 的值     |
+; | Remove Values From List   | list_, *values                | 从 list 中删除给定的 values，可以指定多个 |
+; | Reverse List             | list_                          | 反转 list                               |
+; S 开头的常用关键字列表
+; | 关键字                     | 参数列表                          | 描述                                      |
+; |--------------------------|---------------------------------|-----------------------------------------|
+; | Set List Value           | list_, index, value              | 将 list 中指定索引 index 的值修改为 value |
+; | Set To Dictionary        | dictionary, *key_value_pairs, **items | 将 key_value_pairs 和 items 添加到 dict 中 |
+; | Sort List                | list_                           | 对 list 进行适当的排序                   |
