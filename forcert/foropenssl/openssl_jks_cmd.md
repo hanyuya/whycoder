@@ -50,7 +50,12 @@ openssl cmp -cmd ir -server "https://demo.one.digicert.com/iot/api/v1/cmp" -reci
 ./openssl ec -in ec_private.key -text -noout
 ```
 
-### 生成公钥
+### 验证私钥的完整性和正确性
+```bash
+./openssl rsa -in yourPrivateKey.key -check
+```
+
+### 生成公钥（从私钥中提取公钥）
 ```bash
 # 根据ras私钥生成公钥
 ./openssl rsa -in private.key -inform pem -pubout -out pubkey.pem
@@ -98,6 +103,14 @@ openssl cmp -cmd ir -server "https://demo.one.digicert.com/iot/api/v1/cmp" -reci
 ```bash
 ./openssl req -in cert.csr -noout -text
 ```
+
+### 检查 CSR 信息
+```bash
+# 在将 CSR 发送给证书颁发机构之前，使用此 OpenSSL 命令验证 CSR 是否包含正确信息。
+./openssl req -text -in yourCSR.csr -noout -verify
+```
+
+
 ### 根据CSR生成证书
 
 #### 生成根CA证书
@@ -177,7 +190,9 @@ cat mid.crt root.crt > ca-chain.crt
 ```
 
 ### pkcs7
-    
+> pkcs7: https://docs.openssl.org/3.4/man1/openssl-pkcs7/#copyright
+>
+> crl2pkcs7: https://docs.openssl.org/3.4/man1/openssl-crl2pkcs7/#copyright
 #### 解析pkcs7文件——转换为pem格式
 ```bash
 ./openssl pkcs7 -in source.p7b -inform PEM -print_certs -out cert.pem
@@ -187,14 +202,30 @@ cat mid.crt root.crt > ca-chain.crt
 ./openssl pkcs7 -in source.p7b -inform DER -print_certs -out cert.pem
 ```
 
-## 公私钥匹配
+#### Output all certificates in a file:
+```bash
+./openssl pkcs7 -in file.pem -print_certs -out certs.pem
+```
+#### Create a PKCS#7 structure from a certificate and CRL:
+```bash
+./openssl crl2pkcs7 -in crl.pem -certfile cert.pem -out p7.pem
+```
+#### Creates a PKCS#7 structure in DER format with no CRL from several different certificates:
+```bash
+./openssl crl2pkcs7 -nocrl -certfile newcert.pem -certfile demoCA/cacert.pem -outform DER -out p7.der
+```
+
+## 公私钥匹配（验证证书、私钥和 CSR 之间的一致性）
 ```bash
 # 公私钥匹配——私钥
 ./openssl pkey -in private.key -pubout -outform pem | sha256sum
+./openssl rsa -noout -modulus -in privateKey.key | openssl md5
 # 公私钥匹配——公钥证书
 ./openssl x509 -in certificate.crt -pubkey -noout -outform pem | sha256sum
+./openssl x509 -noout -modulus -in certificate.crt | openssl md5
 # 公私钥匹配——CSR
 ./openssl req -in CSR.csr -pubkey -noout -outform pem | sha256sum
+./openssl req -noout -modulus -in CSR.csr | openssl md5
 ```
 
 
@@ -530,4 +561,10 @@ openssl x509 -in certificate.crt -sha256 -fingerprint -noout | cut -d= -f2 | tr 
 ## 算法套件
 ```bash
 openssl ciphers -V | column -t | less
+```
+
+## 检查 SSL 连接
+使用此命令可测试和诊断与服务器的 SSL 连接。
+```
+openssl s_client -connect www.yoursite.com:443
 ```
