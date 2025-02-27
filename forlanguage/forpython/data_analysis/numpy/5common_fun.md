@@ -4,7 +4,7 @@
 ### np.argwhere
 ```python
 numpy.argwhere(condition)
-```
+```git 
 - 用于返回满足特定条件的元素的索引。它通常用于查找数组中符合某个条件的元素的位置。
 
 ```python
