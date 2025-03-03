@@ -1,0 +1,68 @@
+﻿1. 多层级索引表
+	# 如果格式有问题，可以先把excel里面的数据规范一下，让你的索引处于第一列或者第一行
+	pd.read_excel(io, header=[], index_col)
+	
+	构造多层级：
+		pd.MultiIndex.from_product([[A,B],[1,2,3]])
+		pd.MultiIndex.from_arrays([[A,A,A,B,B,B],[1,2,3,1,2,3]])
+		pd.MultiIndex.from_tuples()
+	多层级访问：
+		索引的表达方式使用 (level1, level2.., leveln)	
+		df.loc[index, column]
+		s.loc[index]
+		隐式索引处理不受多层级索引影响
+		
+		把多层级索引变成单层级索引再访问，属于间接访问，读操作可以，读写不安全
+	多层索引的变形 (stack,unstack)
+		stack(level) level指定索引的层级，从内向外 -1,-2,-n..
+	聚合同但层级索引的聚合
+
+2. 级联和合并
+	pd.concat((), axis, join, keys, join_axes, ignore_index)
+		() 接受的所有dataFrame对象
+		axis 控制级联的方向 axis=0纵向连接  axis=1横向连接
+		join: inner保留级联方向上索引的交集  outer 保留级联方向上索引的并集
+		join_axes: [pd.Index(["B"])]
+		ignore_index: True, False , 忽略索引，重新排列（以整数）
+		keys: 保留原始索引，增加索引的级数
+	df.append() 简洁的纵向连接的方法
+	应用场景：相同的表结构进行汇总
+
+	pd.merge(left, right, how, on, left_on, right_on, left_index, right_index, suffiexes)
+		left, right 参与合并的左表和右表
+		how: inner outer left right 【内容上的交集或并集】
+		on: 两张表中有多个字段名字相同，但是我们只希望根据其中的一个或几个进行合并
+		suffiexes：为字段名相同且不参与合并的列标签添加后缀
+		left_on, right_on： 如果两张表中希望合并的列名字不同，可以分别指定列名称
+		left_index, right_index： 如果某张表希望以行索引作为合并列，使用这两个参数开启，True,False
+	注意事项：
+		1. 合并只列相关，跟行没关
+		2. 合并的时候，和列名称没关系，主要看两个列的内容是是否存在一对一、一对多、多对多的关系
+		3. 合并的列，最好选离散型的列，不要选数值型（连续型）
+
+扩展的两个方法：
+	df.set_index(列标签) 把某一列设置为行索引
+	     density
+	北京 90000
+	上海 80000
+	
+	df.drop() 删除行或列
+	df.drop(index, axis=0, inplace=True)  删除行
+	df.drop(column, axis=1) 删除列
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
